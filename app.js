@@ -3,6 +3,9 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var rfs = require('rotating-file-stream')
+var hbs = require('hbs');
+var fs  = require('fs');
 
 /** Importing user login modules */
 var passport   = require('passport');
@@ -17,7 +20,18 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
+// registered partials
+hbs.registerPartials(__dirname + '/views/partials');
 
+
+// set logger to a daily logging mode
+var logDirectory = path.join(__dirname, 'log');
+fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
+
+var accessLogStream = rfs('access.log', {
+  interval: '1d', // rotate daily
+  path: logDirectory
+})
 
 //For BodyParser
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,6 +45,9 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 
 app.use(logger('dev'));
+app.use(logger('combined', { stream: accessLogStream }))
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
