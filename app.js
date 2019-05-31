@@ -1,11 +1,15 @@
 var createError = require('http-errors');
 var express = require('express');
+var methodOverride = require('method-override');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var rfs = require('rotating-file-stream')
 var hbs = require('hbs');
 var fs  = require('fs');
+var flash = require('connect-flash');
+var passport = require("./config/passport");
+
 
 /** Importing user login modules */
 var passport   = require('passport');
@@ -16,6 +20,9 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+
+// override with POST having ?_method=DELETE
+app.use(methodOverride('_method'))
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -39,10 +46,14 @@ app.use(bodyParser.json());
 
 
 // For Passport
- 
-app.use(session({ secret: 'keyboard cat',resave: true, saveUninitialized:true})); // session secret
+app.use(session({ 
+  secret: 'keyboard cat',
+  resave: true, 
+  saveUninitialized:true}
+)); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
+app.use(flash());
 
 app.use(logger('dev'));
 app.use(logger('combined', { stream: accessLogStream }))
