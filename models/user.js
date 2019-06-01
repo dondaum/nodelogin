@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
           msg: 'Please enter a valid age! E.g. 18 or 88!'
         }
       }
+    },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     }
   }, {});
   User.associate = function(models) {
