@@ -2,10 +2,14 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models').User;
 const Sequelize = require('sequelize');
+var passport   = require('passport');
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  User.findAll().then(users => {
+router.get('/', checkAuthentication, function(req, res, next) {
+  User.findAll({
+    where: {
+      id: req.user.id
+    }}).then(users => {
     res.render('users/index', { 
       users: users,
       messages: req.flash('info') 
@@ -47,8 +51,8 @@ router.post('/create', function(req, res, next) {
 });
 
 /* GET a single user */
-router.get('/:id', function(req, res, next) {
-  User.findOne({ where: {id: req.params.id}}).then( function(user) {
+router.get('/:id', checkAuthentication, function(req, res, next) {
+  User.findOne({ where: {id: req.user.id}}).then( function(user) {
     res.render('users/show', {
       user: user
     });
@@ -59,7 +63,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 
-router.delete('/:id' , function(req, res, next) {
+router.delete('/:id', checkAuthentication , function(req, res, next) {
   User.destroy({
     where: { id: req.params.id }
   }).then( success => {
@@ -70,5 +74,43 @@ router.delete('/:id' , function(req, res, next) {
     console.log(err);
   });
 });
+
+
+router.get('/user/login', function(req, res, next){
+  
+  res.render('users/login', {
+    error_messages: req.flash('error'),
+    success_messages: req.flash('success')
+  });
+});
+
+router.post('/user/login', function(req, res, next){
+  console.log(req.body);
+
+  passport.authenticate('local', {
+    successRedirect:'/',
+    failureRedirect:'/users/user/login',
+    failureFlash: true
+  })(req, res, next);
+});
+
+
+router.get('/user/logout', function(req,res,next) {
+  req.logout();
+  req.flash('success', 'You have logged out!');
+  res.redirect('/users/user/login');
+});
+
+
+// access control 
+function checkAuthentication(req,res,next){
+  if(req.isAuthenticated()){
+      //req.isAuthenticated() will return true if user is logged in
+      next();
+  } else{
+    req.flash('error', 'You must log in or signup');
+    res.redirect('/users/user/login');
+  }
+}
 
 module.exports = router;

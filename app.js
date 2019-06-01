@@ -8,7 +8,6 @@ var rfs = require('rotating-file-stream')
 var hbs = require('hbs');
 var fs  = require('fs');
 var flash = require('connect-flash');
-var passport = require("./config/passport");
 
 
 /** Importing user login modules */
@@ -54,6 +53,18 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash());
+
+// Passport Config
+require('./config/passport')(passport);
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('*', function(req, res, next) {
+  res.locals.user = req.user || null;
+  next();
+});
+
 
 app.use(logger('dev'));
 app.use(logger('combined', { stream: accessLogStream }))

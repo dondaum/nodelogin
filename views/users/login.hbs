@@ -1,0 +1,21 @@
+{{#if error_messages}}
+<div class="alert alert-danger" role="alert">
+  {{ error_messages }}
+</div>
+{{/if}}
+{{#if success_messages}}
+<div class="alert alert-success" role="alert">
+  {{ success_messages }}
+</div>
+{{/if}}
+<form action="/users/user/login" method="POST" class="form-signin">
+      <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+      <label for="inputEmail" class="sr-only">Username</label>
+      <input type="text" name="username" class="form-control" placeholder="Username" required autofocus>
+      <label for="inputPassword" class="sr-only">Password</label>
+      <input type="password" name="password" class="form-control" placeholder="Password" required>
+      <button id="btnSignin" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      <a href="/users/new" class="btn btn-lg btn-success btn-block" role="button">Sign up!</a>
+      <p class="mt-5 mb-3 text-muted">Node App</p>
+</form>
+

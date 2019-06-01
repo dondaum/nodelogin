@@ -8,14 +8,23 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-              <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+              <a class="nav-link" href="/">Home</a>
             </li>
+            {{#if user}}
             <li class="nav-item">
               <a class="nav-link" href="/users">Users</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/secret">Secret</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/users/user/logout">Logout</a>
+            </li>
+            {{else}}
+            <li class="nav-item">
+                <a class="nav-link" href="/users/user/login">Login</a>
+            </li>
+            {{/if}}
           </ul>
           <form class="form-inline mt-2 mt-md-0">
             <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
