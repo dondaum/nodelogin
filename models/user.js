@@ -42,6 +42,29 @@ module.exports = (sequelize, DataTypes) => {
   User.beforeCreate(function(user) {
     user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10), null);
   });
+
+  User.prototype.sayHi = function() {
+    return 'Hi from a custom user method of the user model';
+  };
+
+  User.prototype.checkAdmin = function(user) {
+    return new Promise(function(resolve, reject) {
+      User.findOne({where: {id: user.id} }).then( user => {
+        if(user.isAdmin === true) {
+          resolve(user.isAdmin);
+        }
+        else if (user.isAdmin != true){
+          resolve(user.isAdmin);
+        }
+        else {
+          reject(Error('Something went wrong'));
+        }
+      });
+    });
+  };
+
+
+
   return User;
 
 };

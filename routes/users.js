@@ -6,15 +6,30 @@ var passport   = require('passport');
 
 /* GET users listing. */
 router.get('/', checkAuthentication, function(req, res, next) {
-  User.findAll({
-    where: {
-      id: req.user.id
-    }}).then(users => {
-    res.render('users/index', { 
-      users: users,
-      messages: req.flash('info') 
-    });
-  });
+  cehckAdmin(req.user).then( check => {
+    if(check === true) {
+      User.findAll().then( users => {
+        res.render('users/index', { 
+          users: users,
+          messages: req.flash('info') 
+        });
+      })
+    }
+    else {
+      User.findAll({
+        where: {
+          id: req.user.id
+        }}).then(users => {
+        res.render('users/index', { 
+          users: users,
+          messages: req.flash('info') 
+        });
+      });
+    }
+  }).catch( err => {
+    console.log('-----*----', err)
+    res.redirect('/');
+  })
 });
 
 /* GET user new form. */
@@ -100,6 +115,23 @@ router.get('/user/logout', function(req,res,next) {
   req.flash('success', 'You have logged out!');
   res.redirect('/users/user/login');
 });
+
+
+function cehckAdmin(user) {
+  return new Promise(function(resolve, reject) {
+    User.findOne({where: {id: user.id} }).then( user => {
+      if(user.isAdmin === true) {
+        resolve(user.isAdmin);
+      }
+      else if (user.isAdmin != true){
+        resolve(user.isAdmin);
+      }
+      else {
+        reject(Error('Something went wrong'));
+      }
+    });
+  });
+};
 
 
 // access control 

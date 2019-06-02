@@ -20,9 +20,16 @@ const body = {
 
 //create a user
 //const newUser = await User.create(body);
-User.create(body).then( function(user) {
-   console.log('User is created', user )
+// User.create(body).then( function(user) {
+//    console.log('User is created', user )
+// });
+
+// update a user to be admin
+
+User.findOne({where: {username: 'dondaum'}}).then( user => {
+    user.update({isAdmin: true});
 });
+
 
 // destroy all users
 // User.destroy({
@@ -33,7 +40,7 @@ User.create(body).then( function(user) {
 //find the user
 //let user = await User.findOne({where: {email}});
 
-console.log(body);
+
 //console.log(user);
 
 //destroy the user with the object, this will call DELETE where id = our_user_id automatically.
